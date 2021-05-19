@@ -7,7 +7,7 @@ height = 500
 win = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Game")
 
-clientNumber = 0.0
+clientNumber = 0
 
 class Player():
     def __init__(self,x,y,width,height,color):
@@ -52,7 +52,7 @@ def makePos(tup):
     return str(tup[0]) + "," + str(tup[1])
 
 
-def redrawWindow(win,player,player2):
+def redrawWindow(win,player,player2): #draw Square
     win.fill((255,255,255))
     player.draw(win)
     player2.draw(win)
@@ -73,7 +73,6 @@ def main():
         p2.x = p2Pos[0]
         p2.y = p2Pos[1]
         p2.update
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

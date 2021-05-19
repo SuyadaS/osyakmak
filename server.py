@@ -1,4 +1,4 @@
-import _thread
+import threading
 import socket
 import sys
 
@@ -23,25 +23,24 @@ def readPos(str):
 def makePos(tup):
     return str(tup[0]) + "," + str(tup[1])
 
-pos = [(0,0),(0,100)]
+pos = [(0,0),(100,100)]
 
 def threaded_client(conn,player):
-    #conn.send(str.encode("Connected")) send connected to client
     conn.send(str.encode(makePos(pos[player])))
     reply = ""
     while True:
         try:
             data = readPos(conn.recv(2048).decode()) #size of information in bits
-            posPlayer = data
+            pos[player] = data
             #reply = data.decode("utf-8") whenever we sent data btwn client and server we have to encode and decode
             if not data:
                 print("Disconnected")
                 break
             else:
-                if player == 1:
+                if player == 1: #if player1 send player0 position
                     reply = pos[0]
-                else:
-                    reply =pos[1]
+                else: #if player0 send player1 position
+                    reply = pos[1]
                 print("Received: ", data)
                 print("Sending: ", reply)
 
@@ -51,10 +50,13 @@ def threaded_client(conn,player):
     print("Lost connection")
     conn.close()
 
+
 currentPlayer = 0
+
 while True: #continously look for connection
     conn, addr = s.accept() #accept connection, cnn store connection, addr store ip address
     print("Connected to:", addr)
-
-    _thread.start_new_thread(threaded_client, (conn, currentPlayer)) #let thread do the threaded_client
+    t = threading.Thread(target=threaded_client, args=(conn, currentPlayer))
+    t.start()
+    #_thread.start_new_thread(threaded_client, (conn, currentPlayer)) #let thread do the threaded_client
     currentPlayer += 1
